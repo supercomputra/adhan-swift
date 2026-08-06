@@ -4,14 +4,14 @@ Adhan Swift is a well tested and well documented library for calculating Islamic
 
 All astronomical calculations are high precision equations directly from the book _“Astronomical Algorithms” by Jean Meeus_. This book is recommended by the Astronomical Applications Department of the U.S. Naval Observatory and the Earth System Research Laboratory of the National Oceanic and Atmospheric Administration.
 
-Implementations of Adhan in other languages can be found in the parent repo [Adhan](https://github.com/batoulapps/Adhan).
+This is a fork of [batoulapps/adhan-swift](https://github.com/batoulapps/adhan-swift). Implementations of Adhan in other languages can be found in the original parent repo [Adhan](https://github.com/batoulapps/Adhan).
 
 ## Installation
 
 ### Swift Package Manager
 
 - Project > Package Dependencies
-- Add https://github.com/batoulapps/adhan-swift.git
+- Add https://github.com/supercomputra/adhan-swift.git
 - Select "Up to Next Major" with "1.4.0"
 
 ## Usage
