@@ -52,7 +52,16 @@ The rest of the needed information is contained within the `CalculationParameter
 
 [Calculation Parameters & Methods Guide](METHODS.md)
 
+#### Recommended Calculation Method
 
+Instead of picking a `CalculationMethod` manually, you can look up the method(s) recommended for a
+given country using `CalculationMethod.recommended(for:)`, passing an ISO 3166-1 alpha-2 country
+code. The first element returned is the most-recommended method for that country.
+
+```swift
+let methods = CalculationMethod.recommended(for: "ID")
+var params = methods[0].params
+```
 
 ### Prayer Times
 
