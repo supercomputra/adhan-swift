@@ -78,10 +78,44 @@ import Foundation
  
  **malaysia**
 
- Jabatan Kemajuan Islam Malaysia (JAKIM). Early Fajr time with an angle of 20° and standard Isha
- time with an angle of 18°. Same angles as `singapore`; kept as a separate case for
- discoverability and to allow method-specific offsets to diverge in the future. Note: the state
- of Kelantan uses a 19° Fajr angle, which is not modeled separately.
+ Jabatan Kemajuan Islam Malaysia (JAKIM). Fajr angle 18°, Isha angle 18°, plus a documented
+ Dhuhr ihtiyat of 1 min and an empirically-fit Terbit/sunrise adjustment of -1 min.
+
+ CONFIRMED, by an official announcement and primary-source data together: JAKIM's Fajr angle is
+ 18°, not 20°. This was a real policy change, not a static fact: on 20-21 November 2019, the 116th
+ meeting of the Muzakarah Jawatankuasa Fatwa Majlis Kebangsaan Bagi Hal Ehwal Islam (MKI, Malaysia's
+ National Fatwa Committee) decided to move Subuh's solar-altitude criterion from 20° to 18°, ratified
+ for the Federal Territories on 2 December 2019 by the Jawatankuasa Perundingan Hukum Syarak Wilayah
+ Persekutuan. The decision followed an 18-month study by JAKIM together with Universiti Malaya,
+ Universiti Sultan Zainal Abidin, and Universiti Teknologi MARA (UiTM), and moved Subuh about 8
+ minutes later on average. Source: "AL-KAFI #1638: Pasca Perubahan Waktu Subuh; Adakah Waktu Syuruk
+ Dan Imsak Berubah?", Jabatan Mufti Wilayah Persekutuan,
+ https://www.muftiwp.gov.my/en/artikel/al-kafi-li-al-fatawi/4271-al-kafi-1638-pasca-perubahan-waktu-subuh-adakah-waktu-syuruk-dan-imsak-berubah
+ (the same page states Syuruk's own definition — actual sunrise — was not changed by this decision).
+ An earlier version of this preset still used the pre-2019 20° figure; that was a real bug, not a
+ stale-but-defensible simplification, since JAKIM's own live system (verified below) has used 18° for
+ years.
+
+ Confirmed by comparing this library's computed output against JAKIM's own primary-source data (the
+ JSON returned by the official `https://www.e-solat.gov.my/index.php?r=esolatApi/takwimsolat`
+ endpoint — a real browser User-Agent header is required or it 500s, but no session/auth is needed)
+ for zone WLY01 (Kuala Lumpur / Putrajaya), all 365 dates of 2026. JAKIM publishes an official
+ reference-point document for every zone (Titik Rujukan Hitungan Waktu Solat Bagi Seluruh Negeri Di
+ Malaysia, https://www.e-solat.gov.my/portalassets/files/Lampiran%20B.pdf) — notably, WLY01 uses two
+ different reference points: Kg. Gedangsa (3°44'N, 101°23'E) for Subuh/Zuhur/Asar/Maghrib/Isya, and a
+ separate point, Cheras KL (3°11'24"N, 101°45'30"E), specifically for Syuruk. Using those exact
+ coordinates per prayer (not a single city-center coordinate), residual offsets (JAKIM minus this
+ library's computation) were tight and dominated by a single value at all 365 dates: Fajr 0 min
+ (266/365 exact, i.e. before adding any ihtiyat — matching JAKIM's own definition, no extra margin
+ detected), Dhuhr 0 min (333/365 exact, confirming the existing +1 min ihtiyat), Asr 0 min (276/365
+ exact), Maghrib 0 min (286/365 exact), Isha 0 min (290/365 exact), and Terbit -1 min (354/365 exact
+ — this is the one adjustment added here). Using the wrong (single, city-center) coordinate for all
+ six prayers instead of JAKIM's documented per-prayer reference points produced a visibly worse,
+ more scattered fit, which is itself further evidence that the two-reference-point approach above is
+ correct rather than coincidental.
+
+ Not modeled: the state of Kelantan uses its own 19° Fajr angle rather than the national 18°; this
+ preset does not special-case it.
 
  **indonesia**
 
@@ -312,8 +346,8 @@ public enum CalculationMethod: String, Codable, CaseIterable {
             params.rounding = .up
             return params
         case .malaysia:
-            var params = CalculationParameters(fajrAngle: 20, ishaAngle: 18, method: self)
-            params.methodAdjustments = PrayerAdjustments(dhuhr: 1)
+            var params = CalculationParameters(fajrAngle: 18, ishaAngle: 18, method: self)
+            params.methodAdjustments = PrayerAdjustments(sunrise: -1, dhuhr: 1)
             params.rounding = .up
             return params
         case .indonesia:

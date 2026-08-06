@@ -40,21 +40,20 @@ Preset calculation parameters for different regions.
 | qatar | Same Isha interval as `ummAlQura` but with the standard Fajr time using an angle of 18°. |
 | kuwait | Standard Fajr time with an angle of 18°. Slightly earlier Isha time with an angle of 17.5°. |
 | moonsightingCommittee | Method developed by Khalid Shaukat, founder of Moonsighting Committee Worldwide. Uses standard 18° angles for Fajr and Isha in addition to seasonal adjustment values. This method automatically applies the 1/7 approximation rule for locations above 55° latitude. Recommended for North America and the UK. |
-| singapore | Used in Singapore, Malaysia, and Indonesia. Early Fajr time with an angle of 20° and standard Isha time with an angle of 18°. |
-| malaysia | Jabatan Kemajuan Islam Malaysia (JAKIM). Early Fajr time with an angle of 20° and standard Isha time with an angle of 18°. Same angles as `singapore`; kept as a separate case for discoverability and to allow method-specific offsets to diverge in the future. *Note: the state of Kelantan uses a 19° Fajr angle, which is not modeled separately.* |
-| indonesia | Kementerian Agama Republik Indonesia (Kemenag). Fajr angle of 20°, Isha angle of 18°, and a Maghrib angle of 1° below the horizon, plus method-specific minute adjustments, evidenced against Kemenag's official manual and primary-source data. See the in-code documentation for full sourcing. |
+| singapore | Used in Singapore. Early Fajr time with an angle of 20° and standard Isha time with an angle of 18°. |
+| malaysia | Jabatan Kemajuan Islam Malaysia (JAKIM). Fajr angle of 18° — JAKIM revised this from 20° in a November 2019 decision, ratified for the Federal Territories in December 2019 — and standard Isha time with an angle of 18°, plus a documented Dhuhr ihtiyat of 1 minute and an empirically-confirmed Terbit/sunrise adjustment of -1 minute. Verified against JAKIM's own live e-solat.gov.my data for all of 2026. The state of Kelantan uses its own 19° Fajr angle, not modeled here. See the in-code docstring for full sourcing. |
+| indonesia | Kementerian Agama Republik Indonesia (Kemenag). Fajr angle of 20° and Isha angle of 18°, with Maghrib calculated at 1° below the horizon (per Kemenag's own official manual) rather than this library's usual geometric sunset, plus per-prayer ihtiyat margins (2 minutes for Fajr/Asr/Maghrib/Isha, 3 minutes for Dhuhr, -4 minutes for Terbit/sunrise). Verified against Kemenag's own live bimasislam.kemenag.go.id data across three Indonesian cities. See the in-code docstring for full sourcing and evidence. |
 | turkey | An approximation of the Diyanet method used in Turkey. This approximation is less accurate outside the region of Turkey. |
 | tehran | Institute of Geophysics, University of Tehran. Early Isha time with an angle of 14°. Slightly later Fajr time with an angle of 17.7°. Calculates Maghrib based on the sun reaching an angle of 4.5° below the horizon. |
-| northAmerica | Also known as the ISNA method. Can be used for North America, but the moonsightingCommittee method is preferable. Gives later Fajr times and early Isha times with angles of 15°. Matches the Fiqh Council of North America's current fixed-angle recommendation for the USA specifically (15°/15°, year-round); see `fiqhCouncilNorthAmericaCanada` for the Council's separate Canada recommendation (13°/13°). |
-| uoifFrance | Union des Organisations Islamiques de France (now "Musulmans de France"). Uses a fixed angle of 12° for both Fajr and Isha, corresponding to nautical twilight. The most widely followed method among mosques in Paris and Île-de-France. |
+| northAmerica | Also known as the ISNA method. Can be used for North America, but the moonsightingCommittee method is preferable. Gives later Fajr times and early Isha times with angles of 15°. Matches the Fiqh Council of North America's current recommendation for the USA specifically; see `fiqhCouncilNorthAmericaCanada` for the Council's separate Canada recommendation. |
 | fiqhCouncilNorthAmericaCanada | Fiqh Council of North America's Canada-specific recommendation. Uses a fixed angle of 13° for both Fajr and Isha, applied throughout the year. Distinct from the Council's USA recommendation of 15°/15° (see `northAmerica`). |
+| uoifFrance | Union des Organisations Islamiques de France (now "Musulmans de France"). Uses a fixed angle of 12° for both Fajr and Isha, corresponding to nautical twilight. The most widely followed method among mosques in Paris and Île-de-France. |
 | other | Defaults to angles of 0°, should generally be used for making a custom method and setting your own values. |
 
-You can get the calculation method(s) recommended for a given country by calling the `recommended(for:)` function and passing in an ISO 3166-1 alpha-2 country code. The first element returned is the most-recommended method for that country; falls back to `[.muslimWorldLeague]` for countries without a distinct official method.
+You can get a recommended `CalculationMethod` for a country by calling the `recommended(for:)` function and passing in an ISO 3166-1 alpha-2 country code. It returns an array, ordered from most to least recommended, since some countries have more than one method in significant use; countries without a distinct official method fall back to `[.muslimWorldLeague]`.
 
 ```swift
 let methods = CalculationMethod.recommended(for: "ID")
-var params = methods[0].params
 ```
 
 ## Madhab
