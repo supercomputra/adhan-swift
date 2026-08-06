@@ -1,0 +1,126 @@
+{
+	"params": {
+		"latitude": -6.1751,
+		"longitude": 106.8272,
+		"timezone": "Asia/Jakarta",
+		"method": "Indonesia",
+		"madhab": "Shafi",
+		"highLatitudeRule": "MiddleOfTheNight"
+	},
+	"source": [
+		"Library-generated round-trip check: these times are computed via this library's own `.indonesia` preset, not transcribed from a fetched Kemenag table. It exists to catch accidental regressions in the preset's angle/ihtiyat values with a tight variance, independent of any external data source.",
+		"For a check against Kemenag's actual primary-source data, see Jakarta-Kemenag-Indonesia.json.",
+		"See the `.indonesia` case's docstring in Sources/Models/CalculationMethod.swift for the full sourcing and evidence behind this preset's parameters."
+	],
+	"variance": 1,
+	"times": [
+		{
+			"date": "2026-01-01",
+			"fajr": "4:19 AM",
+			"sunrise": "5:38 AM",
+			"dhuhr": "12:00 PM",
+			"asr": "3:26 PM",
+			"maghrib": "6:14 PM",
+			"isha": "7:29 PM"
+		},
+		{
+			"date": "2026-02-01",
+			"fajr": "4:36 AM",
+			"sunrise": "5:51 AM",
+			"dhuhr": "12:10 PM",
+			"asr": "3:29 PM",
+			"maghrib": "6:21 PM",
+			"isha": "7:33 PM"
+		},
+		{
+			"date": "2026-03-01",
+			"fajr": "4:43 AM",
+			"sunrise": "5:55 AM",
+			"dhuhr": "12:09 PM",
+			"asr": "3:12 PM",
+			"maghrib": "6:15 PM",
+			"isha": "7:24 PM"
+		},
+		{
+			"date": "2026-04-01",
+			"fajr": "4:41 AM",
+			"sunrise": "5:52 AM",
+			"dhuhr": "12:00 PM",
+			"asr": "3:14 PM",
+			"maghrib": "6:01 PM",
+			"isha": "7:10 PM"
+		},
+		{
+			"date": "2026-05-01",
+			"fajr": "4:36 AM",
+			"sunrise": "5:50 AM",
+			"dhuhr": "11:53 AM",
+			"asr": "3:14 PM",
+			"maghrib": "5:50 PM",
+			"isha": "7:00 PM"
+		},
+		{
+			"date": "2026-06-01",
+			"fajr": "4:37 AM",
+			"sunrise": "5:53 AM",
+			"dhuhr": "11:54 AM",
+			"asr": "3:15 PM",
+			"maghrib": "5:47 PM",
+			"isha": "7:01 PM"
+		},
+		{
+			"date": "2026-07-01",
+			"fajr": "4:42 AM",
+			"sunrise": "6:00 AM",
+			"dhuhr": "12:00 PM",
+			"asr": "3:21 PM",
+			"maghrib": "5:53 PM",
+			"isha": "7:07 PM"
+		},
+		{
+			"date": "2026-08-01",
+			"fajr": "4:45 AM",
+			"sunrise": "6:00 AM",
+			"dhuhr": "12:03 PM",
+			"asr": "3:24 PM",
+			"maghrib": "5:58 PM",
+			"isha": "7:09 PM"
+		},
+		{
+			"date": "2026-09-01",
+			"fajr": "4:38 AM",
+			"sunrise": "5:50 AM",
+			"dhuhr": "11:56 AM",
+			"asr": "3:14 PM",
+			"maghrib": "5:56 PM",
+			"isha": "7:05 PM"
+		},
+		{
+			"date": "2026-10-01",
+			"fajr": "4:23 AM",
+			"sunrise": "5:34 AM",
+			"dhuhr": "11:46 AM",
+			"asr": "2:51 PM",
+			"maghrib": "5:50 PM",
+			"isha": "6:59 PM"
+		},
+		{
+			"date": "2026-11-01",
+			"fajr": "4:09 AM",
+			"sunrise": "5:23 AM",
+			"dhuhr": "11:40 AM",
+			"asr": "2:55 PM",
+			"maghrib": "5:49 PM",
+			"isha": "7:00 PM"
+		},
+		{
+			"date": "2026-12-01",
+			"fajr": "4:06 AM",
+			"sunrise": "5:24 AM",
+			"dhuhr": "11:45 AM",
+			"asr": "3:10 PM",
+			"maghrib": "5:58 PM",
+			"isha": "7:13 PM"
+		}
+	]
+}

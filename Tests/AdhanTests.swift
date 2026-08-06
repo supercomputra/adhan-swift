@@ -113,13 +113,26 @@ class AdhanTests: XCTestCase {
         XCTAssertEqual(p11.ishaAngle, 18)
         XCTAssertEqual(p11.ishaInterval, 0)
         XCTAssertEqual(p11.method, CalculationMethod.singapore)
-        
-        let p12 = CalculationMethod.tehran.params
-        XCTAssertEqual(p12.fajrAngle, 17.7)
-        XCTAssertEqual(p12.maghribAngle, 4.5)
-        XCTAssertEqual(p12.ishaAngle, 14)
+
+        let p12 = CalculationMethod.indonesia.params
+        XCTAssertEqual(p12.fajrAngle, 20)
+        XCTAssertEqual(p12.maghribAngle, 1)
+        XCTAssertEqual(p12.ishaAngle, 18)
         XCTAssertEqual(p12.ishaInterval, 0)
-        XCTAssertEqual(p12.method, CalculationMethod.tehran)
+        XCTAssertEqual(p12.method, CalculationMethod.indonesia)
+        XCTAssertEqual(p12.methodAdjustments.fajr, 2)
+        XCTAssertEqual(p12.methodAdjustments.sunrise, -4)
+        XCTAssertEqual(p12.methodAdjustments.dhuhr, 3)
+        XCTAssertEqual(p12.methodAdjustments.asr, 2)
+        XCTAssertEqual(p12.methodAdjustments.maghrib, 2)
+        XCTAssertEqual(p12.methodAdjustments.isha, 2)
+
+        let p13 = CalculationMethod.tehran.params
+        XCTAssertEqual(p13.fajrAngle, 17.7)
+        XCTAssertEqual(p13.maghribAngle, 4.5)
+        XCTAssertEqual(p13.ishaAngle, 14)
+        XCTAssertEqual(p13.ishaInterval, 0)
+        XCTAssertEqual(p13.method, CalculationMethod.tehran)
     }
     
     func testPrayerTimes() {
@@ -476,7 +489,105 @@ class AdhanTests: XCTestCase {
         let coords2 = Coordinates(latitude: 48.983226, longitude: -3.216649)
         XCTAssertEqual(HighLatitudeRule.recommended(for: coords2), .seventhOfTheNight)
     }
-    
+
+    // Regression test: `HighLatitudeRule.recommended(for:)` must compare against the latitude's
+    // absolute value so southern-hemisphere locations beyond 48° are treated the same as northern
+    // ones. A prior version compared `coordinates.latitude > 48` directly, which silently never
+    // triggered `.seventhOfTheNight` for any negative (southern) latitude.
+    func testRecommendedHighLatitudeRuleSouthernHemisphere() {
+        // Real-world southern high-latitude locations that should recommend seventhOfTheNight.
+        let ushuaiaArgentina = Coordinates(latitude: -54.8019, longitude: -68.3030)
+        XCTAssertEqual(HighLatitudeRule.recommended(for: ushuaiaArgentina), .seventhOfTheNight)
+
+        let puntaArenasChile = Coordinates(latitude: -53.1638, longitude: -70.9171)
+        XCTAssertEqual(HighLatitudeRule.recommended(for: puntaArenasChile), .seventhOfTheNight)
+
+        let dunedinNewZealand = Coordinates(latitude: -45.8788, longitude: 170.5028)
+        XCTAssertEqual(HighLatitudeRule.recommended(for: dunedinNewZealand), .middleOfTheNight)
+
+        // Mirror-image check: identical distance from the equator, opposite sign, must agree.
+        let coordsNorth = Coordinates(latitude: 45.983226, longitude: -3.216649)
+        let coordsSouth = Coordinates(latitude: -45.983226, longitude: -3.216649)
+        XCTAssertEqual(HighLatitudeRule.recommended(for: coordsNorth), HighLatitudeRule.recommended(for: coordsSouth))
+        XCTAssertEqual(HighLatitudeRule.recommended(for: coordsSouth), .middleOfTheNight)
+
+        let coordsNorthHigh = Coordinates(latitude: 48.983226, longitude: -3.216649)
+        let coordsSouthHigh = Coordinates(latitude: -48.983226, longitude: -3.216649)
+        XCTAssertEqual(HighLatitudeRule.recommended(for: coordsNorthHigh), HighLatitudeRule.recommended(for: coordsSouthHigh))
+        XCTAssertEqual(HighLatitudeRule.recommended(for: coordsSouthHigh), .seventhOfTheNight)
+
+        // Boundary: exactly ±48° is not "beyond" 48°, so both should stay middleOfTheNight.
+        let boundaryNorth = Coordinates(latitude: 48, longitude: 0)
+        let boundarySouth = Coordinates(latitude: -48, longitude: 0)
+        XCTAssertEqual(HighLatitudeRule.recommended(for: boundaryNorth), .middleOfTheNight)
+        XCTAssertEqual(HighLatitudeRule.recommended(for: boundarySouth), .middleOfTheNight)
+
+        // Just past the boundary on both sides should flip to seventhOfTheNight.
+        let justPastNorth = Coordinates(latitude: 48.0001, longitude: 0)
+        let justPastSouth = Coordinates(latitude: -48.0001, longitude: 0)
+        XCTAssertEqual(HighLatitudeRule.recommended(for: justPastNorth), .seventhOfTheNight)
+        XCTAssertEqual(HighLatitudeRule.recommended(for: justPastSouth), .seventhOfTheNight)
+
+        // The equator and southern-hemisphere low latitudes should stay middleOfTheNight.
+        let equator = Coordinates(latitude: 0, longitude: 0)
+        XCTAssertEqual(HighLatitudeRule.recommended(for: equator), .middleOfTheNight)
+
+        let jakartaIndonesia = Coordinates(latitude: -6.2088, longitude: 106.8456)
+        XCTAssertEqual(HighLatitudeRule.recommended(for: jakartaIndonesia), .middleOfTheNight)
+    }
+
+    func testRecommendedCalculationMethod() {
+        // Countries with a single, well-supported recommendation.
+        XCTAssertEqual(CalculationMethod.recommended(for: "ID"), [.indonesia])
+        XCTAssertEqual(CalculationMethod.recommended(for: "MY"), [.malaysia])
+        XCTAssertEqual(CalculationMethod.recommended(for: "SG"), [.singapore])
+        XCTAssertEqual(CalculationMethod.recommended(for: "SA"), [.ummAlQura])
+        XCTAssertEqual(CalculationMethod.recommended(for: "AE"), [.dubai])
+        XCTAssertEqual(CalculationMethod.recommended(for: "KW"), [.kuwait])
+        XCTAssertEqual(CalculationMethod.recommended(for: "EG"), [.egyptian])
+        XCTAssertEqual(CalculationMethod.recommended(for: "LY"), [.egyptian])
+        XCTAssertEqual(CalculationMethod.recommended(for: "SD"), [.egyptian])
+        XCTAssertEqual(CalculationMethod.recommended(for: "MR"), [.ummAlQura])
+        XCTAssertEqual(CalculationMethod.recommended(for: "IR"), [.tehran])
+        XCTAssertEqual(CalculationMethod.recommended(for: "TR"), [.turkey])
+        XCTAssertEqual(CalculationMethod.recommended(for: "TN"), [.karachi])
+        XCTAssertEqual(CalculationMethod.recommended(for: "DZ"), [.muslimWorldLeague])
+        XCTAssertEqual(CalculationMethod.recommended(for: "MA"), [.muslimWorldLeague])
+        XCTAssertEqual(CalculationMethod.recommended(for: "JO"), [.karachi])
+        XCTAssertEqual(CalculationMethod.recommended(for: "SY"), [.karachi])
+        XCTAssertEqual(CalculationMethod.recommended(for: "LB"), [.karachi])
+        XCTAssertEqual(CalculationMethod.recommended(for: "PS"), [.karachi])
+        XCTAssertEqual(CalculationMethod.recommended(for: "NG"), [.karachi])
+        XCTAssertEqual(CalculationMethod.recommended(for: "GH"), [.muslimWorldLeague])
+        XCTAssertEqual(CalculationMethod.recommended(for: "PH"), [.karachi])
+        XCTAssertEqual(CalculationMethod.recommended(for: "ZA"), [.karachi])
+        XCTAssertEqual(CalculationMethod.recommended(for: "SN"), [.muslimWorldLeague])
+        XCTAssertEqual(CalculationMethod.recommended(for: "NL"), [.muslimWorldLeague])
+
+        // Grouped country codes sharing a single recommendation.
+        for countryCode in ["PK", "IN", "BD", "AF"] {
+            XCTAssertEqual(CalculationMethod.recommended(for: countryCode), [.karachi])
+        }
+        for countryCode in ["BH", "OM"] {
+            XCTAssertEqual(CalculationMethod.recommended(for: countryCode), [.ummAlQura])
+        }
+
+        // Countries with more than one method in significant use: first element is the top recommendation.
+        XCTAssertEqual(CalculationMethod.recommended(for: "US"), [.northAmerica, .moonsightingCommittee])
+        XCTAssertEqual(CalculationMethod.recommended(for: "CA"), [.fiqhCouncilNorthAmericaCanada, .moonsightingCommittee])
+        XCTAssertEqual(CalculationMethod.recommended(for: "GB"), [.moonsightingCommittee, .muslimWorldLeague])
+        XCTAssertEqual(CalculationMethod.recommended(for: "FR"), [.uoifFrance, .muslimWorldLeague])
+        XCTAssertEqual(CalculationMethod.recommended(for: "QA"), [.qatar, .ummAlQura])
+
+        // Matching is case-insensitive.
+        XCTAssertEqual(CalculationMethod.recommended(for: "id"), CalculationMethod.recommended(for: "ID"))
+        XCTAssertEqual(CalculationMethod.recommended(for: "Us"), CalculationMethod.recommended(for: "US"))
+
+        // Unrecognized or empty country codes fall back to Muslim World League.
+        XCTAssertEqual(CalculationMethod.recommended(for: "ZZ"), [.muslimWorldLeague])
+        XCTAssertEqual(CalculationMethod.recommended(for: ""), [.muslimWorldLeague])
+    }
+
     func testShafaqGeneral() {
         let coords = Coordinates(latitude: 43.494, longitude: -79.844)
         var params = CalculationMethod.moonsightingCommittee.params
