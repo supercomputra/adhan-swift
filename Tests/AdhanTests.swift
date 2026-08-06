@@ -114,6 +114,14 @@ class AdhanTests: XCTestCase {
         XCTAssertEqual(p11.ishaInterval, 0)
         XCTAssertEqual(p11.method, CalculationMethod.singapore)
 
+        let p14 = CalculationMethod.malaysia.params
+        XCTAssertEqual(p14.fajrAngle, 18)
+        XCTAssertEqual(p14.ishaAngle, 18)
+        XCTAssertEqual(p14.ishaInterval, 0)
+        XCTAssertEqual(p14.method, CalculationMethod.malaysia)
+        XCTAssertEqual(p14.methodAdjustments.sunrise, -1)
+        XCTAssertEqual(p14.methodAdjustments.dhuhr, 1)
+
         let p12 = CalculationMethod.indonesia.params
         XCTAssertEqual(p12.fajrAngle, 20)
         XCTAssertEqual(p12.maghribAngle, 1)
