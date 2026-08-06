@@ -9,7 +9,7 @@
 	},
 	"source": [
 		"Kementerian Agama Republik Indonesia (Kemenag), Kota Jakarta, DKI Jakarta.",
-		"Raw data: JSON returned directly by POST https://bimasislam.kemenag.go.id/ajax/getShalatbln (provinsi=DKI Jakarta, kabko=Kota Jakarta), captured via browser DevTools and preserved verbatim at Tests/Resources/Times/jakarta-raw.json.",
+		"Raw data: JSON returned directly by POST https://bimasislam.kemenag.go.id/ajax/getShalatbln (provinsi=DKI Jakarta, kabko=Kota Jakarta), captured via browser DevTools. The times below are transcribed directly from that raw response; the raw JSON itself is not kept in this repo.",
 		"The 123 dates below are NOT computed by this library, they are Kemenag primary-source values, transcribed directly (subuh->fajr, terbit->sunrise, dzuhur->dhuhr, ashar->asr, maghrib->maghrib, isya->isha), spanning 4 different years to rule out a seasonal or single-year coincidence: January 2025, July 2024, March 2022, November 2026.",
 		"variance is set to 1 min: every one of the six fields (including Terbit/sunrise, once the methodAdjustments.sunrise: -4 fit was added) matches this data within 1 min at all 123 sampled dates. See the .indonesia case docstring in Sources/Models/CalculationMethod.swift for the full sourcing and evidence behind each parameter, including the Terbit fit.",
 		"See Jakarta-Indonesia.json for a library-only round-trip check that does not depend on this external data."
