@@ -12,7 +12,7 @@ This is a fork of [batoulapps/adhan-swift](https://github.com/batoulapps/adhan-s
 
 - Project > Package Dependencies
 - Add https://github.com/supercomputra/adhan-swift.git
-- Select "Up to Next Major" with "1.4.0"
+- Select "Up to Next Major" with "1.5.0"
 
 ## Usage
 
