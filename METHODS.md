@@ -21,7 +21,7 @@ params.adjustments.fajr = 2
 | ishaAngle | Angle of the sun below the horizon used to calculate Isha. |
 | ishaInterval | Minutes after Maghrib (if set, the time for Isha will be Maghrib plus ishaInterval). |
 | madhab | Which setting from the Madhab enum to use for calculating Asr. |
-| highLatitudeRule | Which setting from the HighLatitudeRule enum to use for calculating the minimum time for Fajr and the maximum time for Isha. |
+| highLatitudeRule | Which setting from the HighLatitudeRule enum to use for calculating the minimum time for Fajr and the maximum time for Isha. Default value is `nil`, which uses `HighLatitudeRule.recommended(for:)`: `seventhOfTheNight` above 48° latitude (north or south), otherwise `middleOfTheNight`. |
 | adjustments | PrayerAdjustments struct with custom prayer time adjustments in minutes for each prayer time. |
 | rounding | The behavior for rounding prayer times. Either to nearest minute, to the higher minute, or none.  |
 | shafaq | Used by the MoonsightingCommittee method to determine how to calculate Isha. See explanation of values below. |
@@ -47,7 +47,7 @@ Preset calculation parameters for different regions.
 | tehran | Institute of Geophysics, University of Tehran. Early Isha time with an angle of 14°. Slightly later Fajr time with an angle of 17.7°. Calculates Maghrib based on the sun reaching an angle of 4.5° below the horizon. |
 | northAmerica | Also known as the ISNA method. Can be used for North America, but the moonsightingCommittee method is preferable. Gives later Fajr times and early Isha times with angles of 15°. Matches the Fiqh Council of North America's current recommendation for the USA specifically; see `fiqhCouncilNorthAmericaCanada` for the Council's separate Canada recommendation. |
 | fiqhCouncilNorthAmericaCanada | Fiqh Council of North America's Canada-specific recommendation. Uses a fixed angle of 13° for both Fajr and Isha, applied throughout the year. Distinct from the Council's USA recommendation of 15°/15° (see `northAmerica`). |
-| uoifFrance | Union des Organisations Islamiques de France (now "Musulmans de France"). Uses a fixed angle of 12° for both Fajr and Isha, corresponding to nautical twilight. The most widely followed method among mosques in Paris and Île-de-France. |
+| uoifFrance | Union des Organisations Islamiques de France (now "Musulmans de France"). Fajr and Isha angles of 12° (nautical twilight), with `highLatitudeRule` set to `middleOfTheNight` so both stay at 12° through the summer above 48° latitude; the Grande Mosquée de Lille's published 2026 calendar follows this, while the seventh-of-the-night bound is off by up to 51 minutes there from May to August. The most widely used default for France (Mawaqit, Muslim Pro), not a national standard; the 12° figure comes from secondary sources, as no UOIF publication was found online. The Grande Mosquée de Paris publishes its own, different calendar (Isha 90 minutes after sunset, Fajr near 16° in winter). Mosque precaution margins (commonly Dhuhr +5 and Maghrib +3 minutes) are not included; apply them with `adjustments`. |
 | other | Defaults to angles of 0°, should generally be used for making a custom method and setting your own values. |
 
 You can get a recommended `CalculationMethod` for a country by calling the `recommended(for:)` function and passing in an ISO 3166-1 alpha-2 country code. It returns an array, ordered from most to least recommended, since some countries have more than one method in significant use; countries without a distinct official method fall back to `[.muslimWorldLeague]`.
@@ -71,7 +71,7 @@ Rule for approximating Fajr and Isha at high latitudes.
 
 | Value | Description |
 | ----- | ----------- |
-| middleOfTheNight | Fajr won't be earlier than the midpoint of the night and isha won't be later than the midpoint of the night. This is the default value to prevent fajr and isha crossing boundaries. |
+| middleOfTheNight | Fajr won't be earlier than the midpoint of the night and isha won't be later than the midpoint of the night. This prevents fajr and isha crossing boundaries. |
 | seventhOfTheNight | Fajr will never be earlier than the beginning of the last seventh of the night and Isha will never be later than the end of the first seventh of the night. This is recommended to use for locations above 48° latitude to prevent prayer times that would be difficult to perform. |
 | twilightAngle | The night is divided into portions of roughly 1/3. The exact value is derived by dividing the fajr/isha angles by 60. This can be used to prevent difficult fajr and isha times at certain locations. |
 

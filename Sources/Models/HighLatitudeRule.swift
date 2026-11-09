@@ -32,8 +32,11 @@ import Foundation
 
   **middleOfTheNight**
 
-  Fajr won't be earlier than the midpoint of the night and isha won't be later than the midpoint of the night. This is the default
-  value to prevent fajr and isha crossing boundaries.
+  Fajr won't be earlier than the midpoint of the night and isha won't be later than the midpoint of the night. This prevents
+  fajr and isha crossing boundaries.
+
+  When `CalculationParameters.highLatitudeRule` is nil (the default), `recommended(for:)` picks the rule: `seventhOfTheNight`
+  above 48° latitude (north or south) and `middleOfTheNight` otherwise.
 
   **seventhOfTheNight**
 

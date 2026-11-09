@@ -242,8 +242,27 @@ import Foundation
 
  **uoifFrance**
 
- Union des Organisations Islamiques de France (now "Musulmans de France"). Uses a fixed angle of 12° for both Fajr and Isha,
- corresponding to nautical twilight. The most widely followed method among mosques in Paris and Île-de-France.
+ Union des Organisations Islamiques de France (now "Musulmans de France"). Fajr angle 12° and Isha angle 12°
+ (nautical twilight), no per-prayer adjustments, and `highLatitudeRule` set to `middleOfTheNight`. Each claim below
+ is labeled with what actually supports it.
+
+ - 12°/12° as UOIF's convention rests on secondary sources only: Mawaqit's help centre lists "Muslims of France
+   (previously UOIF)" at 12° (https://help.mawaqit.net/en/articles/9047426), Muslim Pro's France default follows
+   "UOIF guidelines, using a 12° angle", and a Strasbourg mosque article (mosquee-hautepierre.fr, 2025) names UOIF
+   (12°) and the Grande Mosquée de Paris as the two federations that each publish a yearly calendar. No UOIF
+   publication stating the angle was found online; its calendars are printed.
+ - It is the most widely used default for France (Mawaqit, Muslim Pro and most French prayer-time sites), not a
+   national standard: France has no single authority, and mosque timetables differ.
+ - The Grande Mosquée de Paris does not follow it. Its own November 2026 timetable (grandemosqueedeparis.fr) puts
+   Isha 90 minutes after sunset and Fajr near 16° in winter, with Dhuhr +5 and Maghrib +3 minutes, so Paris Fajr
+   differs from this preset by 14 to 26 minutes on sampled days.
+ - `middleOfTheNight` is confirmed by the Grande Mosquée de Lille's published 2026 calendar (via Mawaqit), which
+   follows 12° all summer: with this rule and the mosque's margins every Fajr and Isha matches within 1 minute,
+   while the `seventhOfTheNight` bound that a nil rule selects above 48° (Paris, Lille, Strasbourg) is off by up
+   to 51 minutes from May to August.
+ - Not modeled: mosque precaution margins. Lille adds Fajr -4, Dhuhr +5, Maghrib +3 and Isha +5 minutes; about
+   +5 for Dhuhr also appears in the Paris, Strasbourg and Lyon timetables, but Marseille adds none and no UOIF
+   source states any. Apply them with `adjustments` to match a specific mosque.
 
  **fiqhCouncilNorthAmericaCanada**
 
@@ -362,7 +381,9 @@ public enum CalculationMethod: String, Codable, CaseIterable {
             params.methodAdjustments = PrayerAdjustments(fajr: 0, sunrise: -7, dhuhr: 5, asr: 4, maghrib: 7, isha: 0)
             return params
         case .uoifFrance:
-            return CalculationParameters(fajrAngle: 12, ishaAngle: 12, method: self)
+            var params = CalculationParameters(fajrAngle: 12, ishaAngle: 12, method: self)
+            params.highLatitudeRule = .middleOfTheNight
+            return params
         case .fiqhCouncilNorthAmericaCanada:
             return CalculationParameters(fajrAngle: 13, ishaAngle: 13, method: self)
         case .other:
@@ -418,11 +439,11 @@ public enum CalculationMethod: String, Codable, CaseIterable {
             // Source: "How We Calculate Muslim Prayer Times", Moonsighting.com (moonsighting.com/how-we.html).
             return [.moonsightingCommittee, .muslimWorldLeague]
         case "FR":
-            // France — UOIF ("Musulmans de France") uses a fixed 12°/12° angle (nautical twilight),
-            // described as the most widely followed convention among Paris/Île-de-France mosques;
-            // Muslim World League (18°/17°) is also in use.
-            // Source: "Méthodologie de Calcul des Horaires de Prière à Paris",
-            // horairepriereparis.com/methodologie-calcul-horaires-priere-paris/.
+            // France — no national authority. UOIF ("Musulmans de France") 12°/12° is the most widely
+            // used default (Mawaqit, Muslim Pro); 18°/17° (Muslim World League, also the Algerian and
+            // Moroccan ministries per Mawaqit) is also in use. The Grande Mosquée de Paris publishes its
+            // own calendar that matches neither (see `uoifFrance`).
+            // Sources: help.mawaqit.net/en/articles/9047426; support.muslimpro.com/hc/en-us/articles/204983270.
             return [.uoifFrance, .muslimWorldLeague]
         case "SA":
             // Saudi Arabia — Umm al-Qura University, Makkah, the country's official method
@@ -482,8 +503,9 @@ public enum CalculationMethod: String, Codable, CaseIterable {
             // Iran — Institute of Geophysics, University of Tehran (17.7° Fajr / 14° Isha), matching `.tehran`.
             return [.tehran]
         case "TR":
-            // Türkiye — Diyanet İşleri Başkanlığı, approximated by `.turkey`.
-            return [.turkey]
+            // Türkiye — Diyanet İşleri Başkanlığı, approximated by `.turkey`. Mawaqit lists the Turkish
+            // ministry at 18°/17°, the same angles as `.muslimWorldLeague` without Diyanet's fixed margins.
+            return [.turkey, .muslimWorldLeague]
         case "TN":
             // Tunisia — commonly attributed to the Ministry of Religious Affairs at Fajr/Isha both 18°,
             // matching `.karachi` (18°/18°), but no primary ministry document stating the angle was
