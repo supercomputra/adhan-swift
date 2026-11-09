@@ -141,6 +141,13 @@ class AdhanTests: XCTestCase {
         XCTAssertEqual(p13.ishaAngle, 14)
         XCTAssertEqual(p13.ishaInterval, 0)
         XCTAssertEqual(p13.method, CalculationMethod.tehran)
+
+        let p15 = CalculationMethod.uoifFrance.params
+        XCTAssertEqual(p15.fajrAngle, 12)
+        XCTAssertEqual(p15.ishaAngle, 12)
+        XCTAssertEqual(p15.ishaInterval, 0)
+        XCTAssertEqual(p15.highLatitudeRule, .middleOfTheNight)
+        XCTAssertEqual(p15.method, CalculationMethod.uoifFrance)
     }
     
     func testPrayerTimes() {
@@ -498,6 +505,30 @@ class AdhanTests: XCTestCase {
         XCTAssertEqual(HighLatitudeRule.recommended(for: coords2), .seventhOfTheNight)
     }
 
+    func testUoifFranceAboveRecommendedLatitude() throws {
+        // Lille is above 48°, where a nil highLatitudeRule would clamp Fajr and Isha to a seventh of the night.
+        let coords = Coordinates(latitude: 50.6135, longitude: 3.0613)
+        var comps = DateComponents()
+        comps.year = 2026
+        comps.month = 6
+        comps.day = 20
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = try XCTUnwrap(TimeZone(identifier: "Europe/Paris"))
+        setDateTimeFormat(dateFormatter)
+
+        let params = CalculationMethod.uoifFrance.params
+        let p = try XCTUnwrap(PrayerTimes(coordinates: coords, date: comps, calculationParameters: params))
+        XCTAssertEqual(dateFormatter.string(from: p.fajr), "3:40 AM")
+        XCTAssertEqual(dateFormatter.string(from: p.isha), "11:59 PM")
+
+        var recommendedParams = params
+        recommendedParams.highLatitudeRule = nil
+        let pRecommended = try XCTUnwrap(PrayerTimes(coordinates: coords, date: comps, calculationParameters: recommendedParams))
+        XCTAssertEqual(dateFormatter.string(from: pRecommended.fajr), "4:31 AM")
+        XCTAssertEqual(dateFormatter.string(from: pRecommended.isha), "11:08 PM")
+    }
+
     // Regression test: `HighLatitudeRule.recommended(for:)` must compare against the latitude's
     // absolute value so southern-hemisphere locations beyond 48° are treated the same as northern
     // ones. A prior version compared `coordinates.latitude > 48` directly, which silently never
@@ -557,7 +588,7 @@ class AdhanTests: XCTestCase {
         XCTAssertEqual(CalculationMethod.recommended(for: "SD"), [.egyptian])
         XCTAssertEqual(CalculationMethod.recommended(for: "MR"), [.ummAlQura])
         XCTAssertEqual(CalculationMethod.recommended(for: "IR"), [.tehran])
-        XCTAssertEqual(CalculationMethod.recommended(for: "TR"), [.turkey])
+        XCTAssertEqual(CalculationMethod.recommended(for: "TR"), [.turkey, .muslimWorldLeague])
         XCTAssertEqual(CalculationMethod.recommended(for: "TN"), [.karachi])
         XCTAssertEqual(CalculationMethod.recommended(for: "DZ"), [.muslimWorldLeague])
         XCTAssertEqual(CalculationMethod.recommended(for: "MA"), [.muslimWorldLeague])
